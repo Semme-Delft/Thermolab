@@ -127,7 +127,7 @@ print(this_particle)
 ```
 
 ```python
-%whos hallos
+%whos hallos de
 ```
 
 Nu we een object hebben, laten we eens kijken of we de eigenschappen van het object kunnen opvragen:
