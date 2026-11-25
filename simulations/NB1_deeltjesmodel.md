@@ -185,7 +185,7 @@ print(this_particle)
 ```
 
 ```python
-%whos hallos de
+%whos 
 ```
 
 Nu we een object hebben, laten we eens kijken of we de eigenschappen van het object kunnen opvragen:
@@ -287,8 +287,38 @@ En als je wilt gaan voor een uitdaging:
 ```
 
 ```python
-### YOUR CODE HERE ###
+import numpy as np
+import matplotlib.pyplot as plt
 
+class ParticleClass:
+    def __init__(self, m, v, r, R):
+        self.m = m                         # massa van het deeltje
+        self.v = np.array(v, dtype=float)  # snelheids vector
+        self.r = np.array(r, dtype=float)  # positie vector
+        self.R = np.array(R, dtype=float)  # radius van het deeltje
+
+    def update_position(self, dt):
+        """Werk de positie van het deeltje bij op basis van zijn snelheid en tijdstap dt."""
+        self.r += self.v * dt
+
+aantal_deeltjes = 10
+particle_array = []
+dt = 1.0 
+
+for start_x in range(aantal_deeltjes):
+    v_x = np.random.uniform(-5, 5)
+    v_y = np.random.uniform(1,-3)
+    deeltje = ParticleClass(m=1.0, v=[v_x, v_y], r=[float(start_x), 0.0], R=1.0)
+    particle_array.append(deeltje)
+
+plt.figure()
+for particle in particle_array:
+    particle.update_position(dt)  # Update eerst de positie
+    plt.plot(particle.r[0], particle.r[1], 'k.')
+
+plt.xlabel('x-positie')
+plt.ylabel('y-positie')
+plt.show()
 
 ```
 
