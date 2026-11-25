@@ -340,6 +340,17 @@ eind = time.time()
 lengte = eind - start
 
 print("Dit kostte ", lengte, "seconde!")
+
+start_kort = time.time()
+array_kort = np.random.rand(N)
+eind_kort = time.time()
+
+lengte_kort = eind_kort - start_kort
+print("De kortste methode kostte", lengte_kort, "seconde!")
+
+verschil = lengte / lengte_kort
+print("De runtime is", verschil, "keer korter.")
+
 ```
 
 Idealiter draaien we de bovenstaande code een aantal keer zodat we een goede schatting hebben van de rekentijd.
@@ -361,9 +372,9 @@ Met de MyST extentie in jupyterlab kun je gebruik maken van [eval](https://mystm
 De runtime is {eval}`<naam variabele>` korter.
 ```
 
-```python
 
-```
+De runtime is {eval}`verschil` keer korter.
+
 
 ## Aan de slag met deeltjes
 Zoom je heel ver in, dan zie je deeltjes rond vliegen.
@@ -493,11 +504,6 @@ def init():
     dot.set_data([], [])
     return dot,
 
-# Update function for each frame
-def update(frame):
-    particle.update_position()
-    dot.set_data([particle.r[0]], [particle.r[1]])
-    return dot,
 
 # Create animation
 ani = FuncAnimation(fig, update, frames=range(200), init_func=init, blit=True, interval=50)
@@ -521,9 +527,22 @@ Controleer je eigen antwoord door de functie hierboven even te vervangen door de
 # doorlopende doos
 def update(frame):
     particle.update_position()
+    
+    # Horizontaal (links <-> rechts)
+    if particle.r[0] < -10:
+        particle.r[0] += 20  # van links naar rechts
+    elif particle.r[0] > 10:
+        particle.r[0] -= 20  # van rechts naar links
+        
+    # Verticaal (onder <-> boven)
+    if particle.r[1] < -10:
+        particle.r[1] += 20  # van onder naar boven
+    elif particle.r[1] > 10:
+        particle.r[1] -= 20  # van boven naar beneden
+        
     dot.set_data([particle.r[0]], [particle.r[1]])
-### YOUR CODE HERE ###
-    return dot,         
+    return dot,
+
 ```
 
 ```{exercise} Harde wanden
@@ -537,9 +556,26 @@ Test wederom je code door de vernieuwde functie hierboven te plakken.
 # harde wanden
 def update(frame):
     particle.update_position()
+    
+    # Linker- en rechterwand dus x richting
+    if particle.r[0] < -10:
+        particle.r[0] = -10
+        particle.v[0] = -particle.v[0]
+    elif particle.r[0] > 10:
+        particle.r[0] = 10
+        particle.v[0] = -particle.v[0]
+        
+    # Onder- en bovenwand dus y richting
+    if particle.r[1] < -10:
+        particle.r[1] = -10
+        particle.v[1] = -particle.v[1]
+    elif particle.r[1] > 10:
+        particle.r[1] = 10
+        particle.v[1] = -particle.v[1]
+
     dot.set_data([particle.r[0]], [particle.r[1]])
-### YOUR CODE HERE ###
     return dot,
+
 ```
 
 ```{exercise}
@@ -550,10 +586,10 @@ Verander nu de code zodanig dat de beginsnelheid gegeven wordt door $\vec{v}=5\h
 
 ```python
 # Simulation parameters
-dt = 0.1         # time step
+R = 0.1          # time step
 num_steps = 500  # number of time steps
 
-### YOUR CODE HERE ###
+particle = ParticleClass(m=1.0, v=(5.0, 3.0), r=(0.0, 0.0), R=0.1)
 
 # Create the figure and axis
 fig, ax = plt.subplots()
@@ -575,16 +611,36 @@ def init():
 # Update function for each frame
 def update(frame):
     particle.update_position()
-    dot.set_data([particle.r[0]], [particle.r[1]])
-    ### YOUR CODE HERE ###
-    return dot,
+    
+    x_fr = 0
+    y_fr = 1
+    
+    # Linker- en rechterwand dus x richting
+    if particle.r[x_fr] < -10:
+        particle.r[x_fr] = -10
+        particle.v[x_fr] = -particle.v[x_fr]
+    elif particle.r[x_fr] > 10:
+        particle.r[x_fr] = 10
+        particle.v[x_fr] = -particle.v[x_fr]
+        
+    # Onder- en bovenwand dus y richting
+    if particle.r[y_fr] < -10:
+        particle.r[y_fr] = -10
+        particle.v[y_fr] = -particle.v[y_fr]
+    elif particle.r[y_fr] > 10:
+        particle.r[y_fr] = 10
+        particle.v[y_fr] = -particle.v[y_fr]
 
+    dot.set_data([particle.r[x_fr]], [particle.r[y_fr]])
+    return dot,
+    
 # Create animation
 ani = FuncAnimation(fig, update, frames=range(200), init_func=init, blit=True, interval=50)
 
 # For Jupyter notebook:
 from IPython.display import HTML
 HTML(ani.to_jshtml())
+
 ```
 
 Laten we teruggaan naar ons deeltje. Er is een functie om de positie bij te werken, hoewel de snelheid hetzelfde lijkt te blijven... kunnen we de snelheid veranderen door (bijvoorbeeld) de versnelling door de zwaartekracht?
@@ -618,12 +674,25 @@ class ParticleClass:
 
 
 ```python
+# Maken van de class met versnelling
+class ParticleClass:
+    def __init__(self, m, v, r, R):
+        self.m = m                         # mass of the particle
+        self.v = np.array(v, dtype=float)  # velocity vector
+        self.r = np.array(r, dtype=float)  # position vector
+        self.R = R                         # radius of the particle
+
+    def update_position(self):
+        self.r += self.v * dt
+    
+    def update_velocity(self, a):
+        self.v += a*dt
 
 # Simulation parameters
 dt = 0.1         # time step
 num_steps = 500  # number of time steps
 particle = ParticleClass(m=1.0, v=[5.0, 0], r=[0.0, 0.0],R=1.0)  
-### YOUR CODE HERE ###
+a = np.array([0.0, -9.81])
 # Create the figure and axis
 fig, ax = plt.subplots()
 ax.set_xlim(-10, 10)
@@ -646,8 +715,26 @@ def update(frame):
     particle.update_velocity(a)
     particle.update_position()
     
-    dot.set_data([particle.r[0]], [particle.r[1]])
-    ### YOUR CODE HERE ###
+    x_fr = 0
+    y_fr = 1
+    
+    # Linker- en rechterwand dus x richting
+    if particle.r[x_fr] < -10:
+        particle.r[x_fr] = -10
+        particle.v[x_fr] = -particle.v[x_fr]
+    elif particle.r[x_fr] > 10:
+        particle.r[x_fr] = 10
+        particle.v[x_fr] = -particle.v[x_fr]
+        
+    # Onder- en bovenwand dus y richting
+    if particle.r[y_fr] < -10:
+        particle.r[y_fr] = -10
+        particle.v[y_fr] = -particle.v[y_fr]
+    elif particle.r[y_fr] > 10:
+        particle.r[y_fr] = 10
+        particle.v[y_fr] = -particle.v[y_fr]
+
+    dot.set_data([particle.r[x_fr]], [particle.r[y_fr]])
     return dot,
 
 # Create animation
