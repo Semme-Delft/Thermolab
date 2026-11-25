@@ -81,7 +81,65 @@ Maak het tijdsinterval $dt$ groter en vergelijk de afgelegde weg in de tien seco
 <!-- Jouw antwoord hier  -->
 
 ```python
-%reset -f  #clears memory as we don't need it further down 
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Beginwaarden
+dt = 0.25                  #s
+t_e = 10                   #s
+N = int(t_e/dt)+1
+t = np.arange(0,t_e+dt,dt) #s
+
+dt_2 = 1                   #s
+N_2 = int(t_e/dt_2)+1
+t_2 = np.arange(0,t_e+dt_2,dt_2) #s
+
+# fietser 1
+x_1 = np.zeros(N)          #m     maakt array van lengte N met alleen maar waarde 0.
+v_1 = 5                    #m/s
+
+x_1_extra = np.zeros(N_2)  #m     
+v_1_extra = 5              #m/s    
+
+# fietser 2
+x_2 = np.zeros(N)          #m     
+v_2 = np.zeros(N)          #m/s     
+a_2 = .5                   #m/s^2      
+
+x_2_extra = np.zeros(N_2)  #m     
+v_2_extra = np.zeros(N_2)  #m/s   
+a_2_extra = .5             #m/s^2
+
+# Uitvoeren van de simulatie
+for i in range(0,N-1):
+    x_1[i+1] = x_1[i] + v_1*dt
+    
+    x_2[i+1] = x_2[i] + v_2[i]*dt
+    v_2[i+1] = v_2[i] + a_2*dt
+
+for i in range(0,N_2-1):
+    x_1_extra[i+1] = x_1_extra[i] + v_1_extra*dt_2
+    
+    x_2_extra[i+1] = x_2_extra[i] + v_2_extra[i]*dt_2
+    v_2_extra[i+1] = v_2_extra[i] + a_2_extra*dt_2
+
+# Plotten van de gegevens.    
+plt.figure()
+
+plt.xlabel('$t$(s)')
+plt.ylabel('$x$(m)')
+
+plt.plot(t,x_1,'r.', markersize=1, label='fietser 1')
+plt.plot(t,x_2,'b.', markersize=1, label='fietser 2')
+plt.plot(t_2,x_1_extra,'m.', markersize=5, label='fietser 1 (dt=1)')
+plt.plot(t_2,x_2_extra,'g.', markersize=5, label='fietser 2 (dt=1)')
+
+plt.legend()
+plt.show()
+
+# Als dt groter wordt, wordt de berekende afgelegde weg van fietser 2 kleiner (22,5 m i.p.v. 24,375 m) en bij fietser 1 blijft deze gelijk (50 m). 
+#Natuurkundig gezien is dit niet logisch, want in werkelijkheid verandert de afgelegde afstand niet (25 m). 
+#Vanuit discretisatie is dit wel logisch want door de grotere tijdsintervallen rekent het model elke stap langer met de lagere beginsnelheid en negeert het de tussentijdse versnelling.
 ```
 
 ## Naar een deeltjesmodel
@@ -230,6 +288,8 @@ En als je wilt gaan voor een uitdaging:
 
 ```python
 ### YOUR CODE HERE ###
+
+
 ```
 
 Onze simulaties worden snel “zwaar”. Er moeten veel berekeningen gedaan worden en dat kost nu eenmaal tijd. Nu is het wel zo dat sommige berekeningen meer tijd kosten dan anderen. Om te kijken of een stukje code geoptimaliseerd kan worden, moeten we een timer maken. Dat kan met onderstaande code:
