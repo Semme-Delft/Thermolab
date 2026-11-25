@@ -755,6 +755,9 @@ Herinner wat we in Q1 hebben gedaan bij de basics van een numerieke simulatie...
 
 ```{solution} ex-deeltjesmodel-6
 Jouw antwoord hier...
+
+De behoud van energie is er niet doordat de energie toeneemt wat veroorzaakt wordt door de afronding van de dt.
+
 ```
 
 Een optie om de simulatie te verbeteren is de tijdstap $\Delta t$ kleiner te maken, maar dan hebben we ook meer geduld meer nodig - het aantal berekeningen schaalt met $\frac{1}{\Delta t}$. Een tweede optie is een meer directe oplossing: We weten dat $a = \mathrm{const.}$ en daarom weten we ook de bewegingsvergelijking van het deeltje!
@@ -841,7 +844,7 @@ Maak de code hieronder voor twee deeltjes die bewegen in een afgesloten doos. Be
 dt = 0.1         # time step
 num_steps = 500  # number of time steps
 particleA = ParticleClass(m=1.0, v=[0, 0], r=[0.0, 0.0],R=1.0)  
-### YOUR CODE HERE ###
+particleB = ParticleClass(m=1.0, v=[5, 0], r=[0.0, 0.0],R=1.0)  
 
 track_x = []
 track_y = []
@@ -870,8 +873,9 @@ def update(frame):
     particleA.update_position()
     particleA.update_velocity(a)
 
-### YOUR CODE HERE ###
-
+    particleB.update_position()
+    particleB.update_velocity(a)
+    
     track_x.append(particleA.r[0])
     track_y.append(particleA.r[1])
     track_line.set_data(track_x, track_y)
